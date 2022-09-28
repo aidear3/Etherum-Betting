@@ -8,6 +8,17 @@ import "../bettable/IBettable.sol";
  */
 interface IBet {
     /**
+     * Status of the bet.
+     */
+    enum Status {
+        NOT_AVAILABLE,
+        FAILED,
+        PENDING_PAYMENT,
+        PAID,
+        WITHDRAWN
+    }
+
+    /**
      * Unique identifier of the bet.
      */
     function getId() external view returns (uint256);
@@ -26,6 +37,16 @@ interface IBet {
      * Sets the user who placed bet.
      */
     function setOwner(address _owner) external;
+
+    /**
+     * Status of the bet.
+     */
+    function getStatus() external view returns (Status);
+
+    /**
+     * Sets the status of the bet.
+     */
+    function setStatus(Status _status) external;
 
     /**
      * Outcome the user is betting on.

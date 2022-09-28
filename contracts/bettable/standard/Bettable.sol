@@ -140,6 +140,7 @@ contract Bettable is IBettable {
         override
         onlyAdmin
         notStarted(_outcome)
+        noBets
     {
         odds[_outcome] = _odds;
     }

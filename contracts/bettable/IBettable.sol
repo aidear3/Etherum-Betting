@@ -48,7 +48,8 @@ interface IBettable {
     function setOdds(Outcome _outcome, uint256 _odds) external;
 
     /**
-     * Odds for the given outcome, if any.
+     * Odds for the given outcome, if any. Should be >= 100, because Bet
+     * divides it by 100 to get the value.
      */
     function getOdds(Outcome _outcome) external view returns (uint256);
 

@@ -25,12 +25,16 @@ contract Bet is IBet {
     // Fee on transactions.
     uint256 private fee;
 
+    // Status of the bet.
+    Status private status;
+
     constructor(
         uint256 _id,
         uint256 _bettableId,
         IBettable.Outcome _outcome,
         uint256 _deposit,
-        uint256 _fee
+        uint256 _fee,
+        Status _status
     ) {
         require(
             _outcome != IBettable.Outcome.NOT_AVAILABLE,
@@ -41,6 +45,15 @@ contract Bet is IBet {
         outcome = _outcome;
         deposit = _deposit;
         fee = _fee;
+        status = _status;
+    }
+
+    /**
+     * Restricted only to admins.
+     */
+    modifier onlyAdmin() {
+        // #TODO should only be accessible by admins
+        _;
     }
 
     /**
@@ -69,7 +82,10 @@ contract Bet is IBet {
      * Only if bet not withdrawn.
      */
     modifier notWithdrawn() {
-        require(deposit != 0, "Bet withdrawn");
+        require(
+            (deposit != 0) && (status != Status.WITHDRAWN),
+            "Bet withdrawn"
+        );
         _;
     }
 
@@ -77,7 +93,7 @@ contract Bet is IBet {
      * Only if bet not paid out.
      */
     modifier notPaid() {
-        require(deposit != 0, "Bet paid out");
+        require((deposit != 0) && (status != Status.PAID), "Bet paid out");
         _;
     }
 
@@ -128,10 +144,13 @@ contract Bet is IBet {
         notPaid
         notWithdrawn
     {
+        // #TODO what if there is not enough to pay out?
+        // #TODO what if the division causes a casting error (uint256 -> ufixed)?
         // #TODO apply a "withdrawing fee"
-        (bool success, ) = owner.call{value: deposit}("");
+        (bool success, ) = owner.call{value: deposit * (1 - fee / 100)}("");
         require(success, "Failed to transfer tokens");
         deposit = 0;
+        status = Status.WITHDRAWN;
     }
 
     function payout(IBettable _bettable)
@@ -142,13 +161,21 @@ contract Bet is IBet {
         outcomeFinal(_bettable.getOutcome())
         notPaid
     {
+        // #TODO what if there is not enough to pay out?
+        // #TODO what if the division causes a casting error (uint256 -> ufixed)?
         // Bet failed
-        if (_bettable.getOutcome() != outcome) return;
+        if (_bettable.getOutcome() != outcome) {
+            status = Status.FAILED;
+            return;
+        }
         // Bet success
-        uint256 toPay = _bettable.getOdds(outcome) * deposit * (1 - fee);
+        uint256 toPay = (_bettable.getOdds(outcome) / 100) *
+            deposit *
+            (1 - fee / 100);
         (bool success, ) = owner.call{value: toPay}("");
         require(success, "Failed to transfer tokens");
         deposit = 0;
+        status = Status.PAID;
     }
 
     function boost(uint256 _amount)
@@ -161,7 +188,9 @@ contract Bet is IBet {
     {
         // #TODO apply a "boosting fee"
         require(_amount > 0, "Cannot boost by 0 tokens");
-        (bool success, ) = address(this).call{value: _amount * (1 + fee)}("");
+        (bool success, ) = address(this).call{value: _amount * (1 + fee / 100)}(
+            ""
+        );
         require(success, "Failed to transfer tokens");
         deposit += _amount;
     }
@@ -174,10 +203,19 @@ contract Bet is IBet {
         notWithdrawn
         notPaid
     {
-        // #TODO apply a "lowering fee"
+        // #TODO what if there is not enough to pay out?
+        // #TODO what if the division causes a casting error (uint256 -> ufixed)?
         require(_amount < deposit, "Cannot lower more than deposited");
-        (bool success, ) = owner.call{value: _amount * (1 + fee)}("");
+        (bool success, ) = owner.call{value: _amount * (1 - fee / 100)}("");
         require(success, "Failed to transfer tokens");
         deposit -= _amount;
+    }
+
+    function getStatus() external view override returns (Status) {
+        return status;
+    }
+
+    function setStatus(Status _status) external override onlyAdmin {
+        status = _status;
     }
 }

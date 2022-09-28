@@ -11,6 +11,7 @@ interface IMatch {
      * Possible outcomes of the match.
      */
     enum Outcome {
+        NOT_AVAILABLE,
         PLAYER_A,
         PLAYER_B,
         TIE
@@ -22,47 +23,62 @@ interface IMatch {
     function getId() external view returns (uint256);
 
     /**
-     * Sets the end timestamp (until when can users place bets.)
+     * Sets the administrator of the match.
      */
-    function setEnd(uint256) external;
+    function setAdmin(address _admin) external;
 
     /**
-     * End timestamp (until when can users place bets.)
+     * Administrator of the match.
      */
-    function getEnd() external view returns (uint256);
+    function getAdmin() external view returns (address);
+
+    /**
+     * Sets the deadline timestamp (until when can users place bets) for a certain outcome.
+     */
+    function setDeadline(Outcome _outcome, uint256 _timestamp) external;
+
+    /**
+     * Deadline timestamp (until when can users place bets) for a certain outcome.
+     */
+    function getDeadline(Outcome _outcome) external view returns (uint256);
 
     /**
      * Sets the odds for the given outcome, if any.
      */
-    function setOdd(Outcome outcome, uint256) external;
+    function setOdds(Outcome _outcome, uint256 _odds) external;
 
     /**
      * Odds for the given outcome, if any.
      */
-    function getOdd(Outcome outcome) external view returns (uint256);
+    function getOdds(Outcome _outcome) external view returns (uint256);
+
+    /**
+     * Sets the final outcome of the match.
+     */
+    function setOutcome(Outcome _outcome) external;
+
+    /**
+     * Final outcome of the match.
+     */
+    function getOutcome() external view returns (Outcome);
 
     /**
      * Places a bet on the match.
      */
-    function addBet(IBet bet) external;
+    function addBet(IBet _bet) external;
 
     /**
-     * All placed bets.
+     * Get bet from bet ID.
      */
-    function getBets() external view returns (IBet[] memory);
-
-    /**
-     * Number of bets placed.
-     */
-    function getBetsCount() external view returns (uint256);
+    function getBet(uint256 _id) external view returns (IBet);
 
     /**
      * Updates a placed bet.
      */
-    function updateBet(IBet bet) external;
+    function updateBet(IBet _bet) external;
 
     /**
      * Revokes an already placed bet, if any.
      */
-    function deleteBet(IBet bet) external;
+    function deleteBet(IBet _bet) external;
 }

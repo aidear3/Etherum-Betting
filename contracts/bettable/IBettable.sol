@@ -4,11 +4,11 @@ pragma solidity ^0.8.0;
 import "../bet/IBet.sol";
 
 /**
- * Represents a match object.
+ * Represents a bettable object.
  */
-interface IMatch {
+interface IBettable {
     /**
-     * Possible outcomes of the match.
+     * Possible outcomes of the bettable.
      */
     enum Outcome {
         NOT_AVAILABLE,
@@ -18,17 +18,17 @@ interface IMatch {
     }
 
     /**
-     * Unique identifier of the match.
+     * Unique identifier of the bettable.
      */
     function getId() external view returns (uint256);
 
     /**
-     * Sets the administrator of the match.
+     * Sets the administrator of the bettable.
      */
     function setAdmin(address _admin) external;
 
     /**
-     * Administrator of the match.
+     * Administrator of the bettable.
      */
     function getAdmin() external view returns (address);
 
@@ -53,17 +53,27 @@ interface IMatch {
     function getOdds(Outcome _outcome) external view returns (uint256);
 
     /**
-     * Sets the final outcome of the match.
+     * Sets the final outcome of the bettable.
      */
     function setOutcome(Outcome _outcome) external;
 
     /**
-     * Final outcome of the match.
+     * Final outcome of the bettable.
      */
     function getOutcome() external view returns (Outcome);
 
     /**
-     * Places a bet on the match.
+     * Sets the information about the bettable.
+     */
+    function setInfo(string memory _info) external;
+
+    /**
+     * Information about the bettable.
+     */
+    function getInfo() external view returns (string memory);
+
+    /**
+     * Places a bet on the bettable.
      */
     function addBet(IBet _bet) external;
 

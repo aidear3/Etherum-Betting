@@ -10,14 +10,14 @@ contract Bet is IBet {
     // Unique identifier of the bet.
     uint256 private id;
 
-    // Unique identifier of the match.
-    uint256 private matchId;
+    // Unique identifier of the bettable.
+    uint256 private bettableId;
 
     // Bet owner.
     address private owner;
 
     // The outcome the bet is bidding on.
-    IMatch.Outcome private outcome;
+    IBettable.Outcome private outcome;
 
     // The deposited value.
     uint256 private deposit;
@@ -27,17 +27,17 @@ contract Bet is IBet {
 
     constructor(
         uint256 _id,
-        uint256 _matchId,
-        IMatch.Outcome _outcome,
+        uint256 _bettableId,
+        IBettable.Outcome _outcome,
         uint256 _deposit,
         uint256 _fee
     ) {
         require(
-            _outcome != IMatch.Outcome.NOT_AVAILABLE,
+            _outcome != IBettable.Outcome.NOT_AVAILABLE,
             "Outcome must be final"
         );
         id = _id;
-        matchId = _matchId;
+        bettableId = _bettableId;
         outcome = _outcome;
         deposit = _deposit;
         fee = _fee;
@@ -57,9 +57,9 @@ contract Bet is IBet {
     /**
      * Requires the outcome to have a final value.
      */
-    modifier outcomeFinal(IMatch.Outcome _outcome) {
+    modifier outcomeFinal(IBettable.Outcome _outcome) {
         require(
-            _outcome != IMatch.Outcome.NOT_AVAILABLE,
+            _outcome != IBettable.Outcome.NOT_AVAILABLE,
             "Outcome must be final"
         );
         _;
@@ -85,8 +85,8 @@ contract Bet is IBet {
         return id;
     }
 
-    function getMatchId() external view override returns (uint256) {
-        return matchId;
+    function getBettableId() external view override returns (uint256) {
+        return bettableId;
     }
 
     function getOwner() external view override returns (address) {
@@ -97,11 +97,11 @@ contract Bet is IBet {
         owner = _owner;
     }
 
-    function getOutcome() external view override returns (IMatch.Outcome) {
+    function getOutcome() external view override returns (IBettable.Outcome) {
         return outcome;
     }
 
-    function setOutcome(IMatch.Outcome _outcome)
+    function setOutcome(IBettable.Outcome _outcome)
         external
         override
         onlyOwner(this)
@@ -134,18 +134,18 @@ contract Bet is IBet {
         deposit = 0;
     }
 
-    function payout(IMatch _match)
+    function payout(IBettable _bettable)
         external
         payable
         override
         onlyOwner(this)
-        outcomeFinal(_match.getOutcome())
+        outcomeFinal(_bettable.getOutcome())
         notPaid
     {
         // Bet failed
-        if (_match.getOutcome() != outcome) return;
+        if (_bettable.getOutcome() != outcome) return;
         // Bet success
-        uint256 toPay = _match.getOdds(outcome) * deposit * (1 - fee);
+        uint256 toPay = _bettable.getOdds(outcome) * deposit * (1 - fee);
         (bool success, ) = owner.call{value: toPay}("");
         require(success, "Failed to transfer tokens");
         deposit = 0;

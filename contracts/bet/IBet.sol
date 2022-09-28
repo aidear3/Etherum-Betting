@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: ISC
 pragma solidity ^0.8.0;
 
-import "../match/IMatch.sol";
+import "../bettable/IBettable.sol";
 
 /**
  * Represents a bet.
@@ -13,9 +13,9 @@ interface IBet {
     function getId() external view returns (uint256);
 
     /**
-     * ID of the match the user bet on.
+     * ID of the bettable the user bet on.
      */
-    function getMatchId() external view returns (uint256);
+    function getBettableId() external view returns (uint256);
 
     /**
      * User who placed bet.
@@ -30,12 +30,12 @@ interface IBet {
     /**
      * Outcome the user is betting on.
      */
-    function getOutcome() external view returns (IMatch.Outcome);
+    function getOutcome() external view returns (IBettable.Outcome);
 
     /**
      * Sets the outcome the user is betting on.
      */
-    function setOutcome(IMatch.Outcome _outcome) external;
+    function setOutcome(IBettable.Outcome _outcome) external;
 
     /**
      * Amount of tokens the user is betting on.
@@ -50,7 +50,7 @@ interface IBet {
     /**
      * Sends owner tokens based on outcome, deposit and odds.
      */
-    function payout(IMatch _match) external payable;
+    function payout(IBettable _bettable) external payable;
 
     /**
      * Adds more tokens to the bet.

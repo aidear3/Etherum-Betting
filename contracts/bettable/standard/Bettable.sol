@@ -1,32 +1,35 @@
 // SPDX-License-Identifier: ISC
 pragma solidity ^0.8.0;
 
-import "../IMatch.sol";
+import "../IBettable.sol";
 
 /**
- * Standard implementation of IMatch.
+ * Standard implementation of IBettable.
  */
-contract Match is IMatch {
-    // Unique identifier of the match.
+contract Bettable is IBettable {
+    // Unique identifier of the bettable.
     uint256 private id;
 
-    // Who created the match.
+    // Who created the bettable.
     address private admin;
 
     // Odds for each outcome, if defined.
-    mapping(IMatch.Outcome => uint256) private odds;
+    mapping(IBettable.Outcome => uint256) private odds;
 
     // Odds for each outcome, if defined.
-    mapping(IMatch.Outcome => uint256) private deadlines;
+    mapping(IBettable.Outcome => uint256) private deadlines;
 
-    // Represents bets placed on this match.
+    // Represents bets placed on this bettable.
     mapping(uint256 => IBet) private bets;
 
     // Number of placed bets.
     uint256 private betsCount = 0;
 
-    // Final outcome of the match.
-    IMatch.Outcome outcome;
+    // Final outcome of the bettable.
+    IBettable.Outcome outcome;
+
+    // Info about the bettable.
+    string private info;
 
     constructor(uint256 _id) {
         id = _id;
@@ -39,7 +42,7 @@ contract Match is IMatch {
     modifier onlyAdmin() {
         require(
             msg.sender == admin,
-            "You must be the administrator of this match"
+            "You must be the administrator of this bettable"
         );
         _;
     }
@@ -116,6 +119,7 @@ contract Match is IMatch {
         override
         onlyAdmin
         notStarted(_outcome)
+        outcomeFinal(_outcome)
     {
         deadlines[_outcome] = _timestamp;
     }
@@ -124,6 +128,8 @@ contract Match is IMatch {
         external
         view
         override
+        notStarted(_outcome)
+        outcomeFinal(_outcome)
         returns (uint256)
     {
         return deadlines[_outcome];
@@ -208,5 +214,13 @@ contract Match is IMatch {
         delete bets[_bet.getId()];
         betsCount--;
         _bet.withdraw();
+    }
+
+    function setInfo(string memory _info) external override onlyAdmin {
+        info = _info;
+    }
+
+    function getInfo() external view override returns (string memory) {
+        return info;
     }
 }

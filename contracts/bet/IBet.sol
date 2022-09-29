@@ -64,22 +64,27 @@ interface IBet {
     function getDeposit() external view returns (uint256);
 
     /**
+     * Calculates the status of the bet (view-only).
+     */
+    function result() external view returns (Status);
+
+    /**
      * Reverts the bet, sends owner tokens back.
      */
-    function withdraw() external payable;
+    function withdraw() external;
 
     /**
      * Sends owner tokens based on outcome, deposit and odds.
      */
-    function payout(IBettable _bettable) external payable;
+    function payout() external;
 
     /**
      * Adds more tokens to the bet.
      */
-    function boost(uint256 _amount) external payable;
+    function boost(uint256 _amount) external;
 
     /**
      * Removes tokens from the bet.
      */
-    function lower(uint256 _amount) external payable;
+    function lower(uint256 _amount) external;
 }

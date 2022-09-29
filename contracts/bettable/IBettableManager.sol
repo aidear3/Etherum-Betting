@@ -36,7 +36,7 @@ interface IBettableManager {
     /**
      * Reads a bettable as an object.
      */
-    function bettableReadObject(uint256 _id) external view returns (IBettable);
+    function bettableReadInstance(uint256 _id) external view returns (IBettable);
 
     /**
      * Reads bettable IDs.

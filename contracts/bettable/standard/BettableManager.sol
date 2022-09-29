@@ -98,7 +98,7 @@ contract BettableManager is IBettableManager, Restricted {
         );
     }
 
-    function bettableReadObject(uint256 _id)
+    function bettableReadInstance(uint256 _id)
         external
         view
         override

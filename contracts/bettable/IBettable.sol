@@ -23,16 +23,6 @@ interface IBettable {
     function getId() external view returns (uint256);
 
     /**
-     * Sets the administrator of the bettable.
-     */
-    function setAdmin(address _admin) external;
-
-    /**
-     * Administrator of the bettable.
-     */
-    function getAdmin() external view returns (address);
-
-    /**
      * Sets the deadline timestamp (until when can users place bets) for a certain outcome.
      */
     function setDeadline(Outcome _outcome, uint256 _timestamp) external;

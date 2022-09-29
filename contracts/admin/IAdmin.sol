@@ -13,6 +13,10 @@ interface IAdmin {
         FUNDING_DEPOSIT,
         FUNDING_WITHDRAW,
         BETS_PAY,
+        BETTABLE_READ,
+        BETTABLE_CREATE,
+        BETTABLE_EDIT,
+        BETTABLE_REMOVE,
         ADMIN_READ,
         ADMIN_CREATE,
         ADMIN_EDIT,
@@ -54,12 +58,17 @@ interface IAdmin {
     function paySalary() external payable;
 
     /**
-     * Admin permissions.
+     * Admin permissions and count.
      */
-    function getPermission() external view returns (Permission[] memory);
+    function getPermissions() external view returns (Permission[] memory, uint256);
 
     /**
-     * Sets the admin permissions.
+     * Grants new permission to admin.
      */
-    function setPermission(Permission[] memory _permissions) external;
+    function grantPermission(Permission _permission) external;
+
+    /**
+     * Revokes permission from admin.
+     */
+    function revokePermission(Permission _permission) external;
 }

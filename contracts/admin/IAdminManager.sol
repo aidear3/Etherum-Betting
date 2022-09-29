@@ -42,7 +42,7 @@ interface IAdminManager {
     /**
      * Returns the current admin if the message sender is an admin.
      */
-    function adminInit() external returns (IAdmin);
+    function adminInit() external view returns (IAdmin);
 
     /**
      * Read specific admin. Only if user has sufficient perms.

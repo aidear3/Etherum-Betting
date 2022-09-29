@@ -2,16 +2,19 @@
 pragma solidity ^0.8.0;
 
 import "../IBettable.sol";
+import "../../admin/IAdmin.sol";
+import "../../admin/IAdminManager.sol";
+import "../../admin/Restricted.sol";
 
 /**
  * Standard implementation of IBettable.
  */
-contract Bettable is IBettable {
+contract Bettable is IBettable, Restricted {
+    // AdminManager component.
+    IAdminManager private adminManager;
+
     // Unique identifier of the bettable.
     uint256 private id;
-
-    // Who created the bettable.
-    address private admin;
 
     // Odds for each outcome, if defined.
     mapping(IBettable.Outcome => uint256) private odds;
@@ -31,20 +34,11 @@ contract Bettable is IBettable {
     // Info about the bettable.
     string private info;
 
-    constructor(uint256 _id) {
+    constructor(IAdminManager _adminManager, uint256 _id)
+        Restricted(_adminManager)
+    {
+        adminManager = _adminManager;
         id = _id;
-        admin = msg.sender;
-    }
-
-    /**
-     * Prevents unwanted modifying.
-     */
-    modifier onlyAdmin() {
-        require(
-            msg.sender == admin,
-            "You must be the administrator of this bettable"
-        );
-        _;
     }
 
     /**
@@ -106,18 +100,10 @@ contract Bettable is IBettable {
         return id;
     }
 
-    function setAdmin(address _admin) external override onlyAdmin {
-        admin = _admin;
-    }
-
-    function getAdmin() external view override returns (address) {
-        return admin;
-    }
-
     function setDeadline(Outcome _outcome, uint256 _timestamp)
         external
         override
-        onlyAdmin
+        onlyPerm(IAdmin.Permission.BETTABLE_EDIT)
         notStarted(_outcome)
         outcomeFinal(_outcome)
     {
@@ -138,7 +124,7 @@ contract Bettable is IBettable {
     function setOdds(Outcome _outcome, uint256 _odds)
         external
         override
-        onlyAdmin
+        onlyPerm(IAdmin.Permission.BETTABLE_EDIT)
         notStarted(_outcome)
         noBets
     {
@@ -157,7 +143,7 @@ contract Bettable is IBettable {
     function setOutcome(Outcome _outcome)
         external
         override
-        onlyAdmin
+        onlyPerm(IAdmin.Permission.BETTABLE_EDIT)
         outcomeFinal(_outcome)
     {
         outcome = _outcome;
@@ -217,7 +203,11 @@ contract Bettable is IBettable {
         _bet.withdraw();
     }
 
-    function setInfo(string memory _info) external override onlyAdmin {
+    function setInfo(string memory _info)
+        external
+        override
+        onlyPerm(IAdmin.Permission.BETTABLE_EDIT)
+    {
         info = _info;
     }
 

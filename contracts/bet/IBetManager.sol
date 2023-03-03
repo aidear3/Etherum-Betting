@@ -2,11 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "./IBet.sol";
+import "../wallet/IWallet.sol";
 
 /**
  * Bet Manager component.
  */
-interface IBetManager {
+interface IBetManager is IWallet {
     /**
      * Places a bet on a bettable event.
      */

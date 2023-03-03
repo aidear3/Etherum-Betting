@@ -144,6 +144,26 @@ contract BetManager is IBetManager, Restricted {
         bets[_id].lower(_amount);
     }
 
+    function deposit()
+        external
+        payable
+        override
+        onlyPerm(IAdmin.Permission.WALLET_DEPOSIT)
+    {}
+
+    function withdraw(uint256 _amount, address payable _receiver)
+        external
+        override
+        onlyPerm(IAdmin.Permission.WALLET_WITHDRAW)
+    {}
+
+    /**
+     * Wallet balance.
+     */
+    function balance() external view returns (uint256) {
+        return address(this).balance;
+    }
+
     receive() external payable {}
 
     fallback() external payable {}

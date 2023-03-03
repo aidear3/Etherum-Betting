@@ -8,34 +8,6 @@ import "./IAdmin.sol";
  */
 interface IAdminManager {
     //
-    // ---------- Funding ----------
-    //
-
-    /**
-     * Read current funding. Only if user has sufficient perms.
-     */
-    function fundingRead() external view returns (uint256);
-
-    /**
-     * Deposit into funding. Only if user has sufficient perms.
-     */
-    function fundingDeposit() external payable;
-
-    /**
-     * Deposit into funding. Only if user has sufficient perms.
-     */
-    function fundingWithdraw(uint256 _amount) external payable;
-
-    //
-    // ---------- Bets ----------
-    //
-
-    /**
-     * Pays all unpaid bets. Only if user has sufficient perms.
-     */
-    function betsPay() external payable;
-
-    //
     // ---------- Admins ----------
     //
 

@@ -9,9 +9,9 @@ interface IAdmin {
      * Permission types.
      */
     enum Permission {
-        FUNDING_READ,
-        FUNDING_DEPOSIT,
-        FUNDING_WITHDRAW,
+        WALLET_READ,
+        WALLET_DEPOSIT,
+        WALLET_WITHDRAW,
         BET_PLACE,
         BET_READ,
         BET_EDIT,

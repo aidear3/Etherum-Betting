@@ -7,15 +7,7 @@ import "../IAdminManager.sol";
  * Standard implementation for IAdminManager.
  */
 contract AdminManager is IAdminManager {
-    function fundingRead() external view override returns (uint256) {}
-
-    function fundingDeposit() external payable override {}
-
-    function fundingWithdraw(uint256 _amount) external payable override {}
-
-    function betsPay() external payable override {}
-
-    function adminInit() internal override returns (IAdmin) {}
+    function adminInit() external view override returns (IAdmin) {}
 
     function adminRead(address _address)
         external
